@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-800">
+    <div class="flex justify-between ml-5">
+      <div class="m-5">
+        <h2 class="text-2xl text-white font-bold mt-5 mb-1">Hello</h2>
+        <h2 class="text-2xl text-white font-semibold mb-4">
+          <%= user %> <span class="font-bold">👋</span>
+        </h2>
+      </div>
+      <div class="p-5 m-5">
+        <button
+          onclick="logout()"
+          class="bg-red-500 p-2 rounded-lg text-white font-bold"
+        >
+          LogOut
+        </button>
+      </div>
+    </div>
+    <main>
+      <div
+        class="pop hidden fixed top-0 left-0 h-screen w-screen flex items-center justify-center backdrop-blur"
+      >
+        <form action="/upload-file" method="post" enctype="multipart/form-data">
+          <div class="flex items-center justify-center w-96">
+            <label
+              for="dropzone-file"
+              id="dropzone-label"
+              class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+            >
+              <div
+                class="flex flex-col items-center justify-center pt-5 pb-6"
+                id="file-info"
+              >
+                <svg
+                  class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                  />
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span class="font-semibold">Click to upload</span> or drag and
+                  drop
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  SVG, PNG, JPG or GIF (MAX. 800x400px)
+                </p>
+              </div>
+              <input
+                id="dropzone-file"
+                type="file"
+                class="hidden"
+                name="file"
+                required
+                onchange="updateLabel()"
+              />
+            </label>
+          </div>
+          
+          <button
+            class="text-white bg-blue-500 hover:bg-blue-700 rounded-lg p-3 mt-4"
+          >
+            Upload File
+          </button>
+          <button
+            type="button"
+            id="remove-btn"
+            class="hidden text-white bg-red-500 hover:bg-red-700 rounded-lg p-3 mt-4"
+            onclick="removeFile()"
+          >
+            Remove File
+          </button>
+        </form>
+        <button
+          onclick="closePopUp()"
+          class="text-white text-[50px] absolute right-20 top-4"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="files m-5 px-5 flex flex-col gap-2">
+        <div class="p-2 rounded-md">
+          <% files.forEach((file) => { %>
+          <div
+            class="flex items-center gap-2 p-2 mt-3 bg-white rounded-md justify-between"
+          >
+            <i class="ri-file-text-line text-lg"> <%= file.filename %> </i>
+            <div class="">
+              <a
+                href="/download/<%= file.path %>"
+                download
+                class="hover:text-blue-500 p-3"
+              >
+                <i class="ri-download-line text-lg text-blue-500"></i>
+              </a>
+              <a href="/delete/<%= file.path %>" class="hover:text-red-500">
+                <i class="ri-delete-bin-line text-lg text-red-500"></i>
+              </a>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <div class="ml-5">
+        <button
+          class="text-white bg-blue-500 hover:bg-blue-700 rounded-lg p-3 m-5"
+          onclick="showPopUp()"
+        >
+          Upload
+        </button>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
+    <script>
+      function updateLabel() {
+        const input = document.getElementById("dropzone-file");
+        const label = document.getElementById("dropzone-label");
+        const removeBtn = document.getElementById('remove-btn');
+        if (input.files.length > 0) {
+          label.querySelector("p").textContent = input.files[0].name;
+          removeBtn.classList.remove('hidden');
+
+        }
+      }
+
+      function removeFile() { const input = document.getElementById('dropzone-file'); const label = document.getElementById('dropzone-label'); const fileInfo = document.getElementById('file-info'); const removeBtn = document.getElementById('remove-btn');
+       // Reset file input 
+      input.value = ''; 
+      // Reset label text and show original info 
+      fileInfo.classList.remove('hidden'); 
+      label.querySelector('p').textContent = 'Click to upload or drag and drop'; 
+      // Hide remove button 
+      removeBtn.classList.add('hidden');
+     }
+      function showPopUp() {
+        document.querySelector(".pop").style.display = "flex";
+      }
+      //close popup
+      function closePopUp() {
+        console.log("afdasf");
+        document.querySelector(".pop").style.display = "none";
+      }
+
+      //logout function to call this route /logout
+      function logout() {
+        console.log("logout");
+        window.location.href = "/logout";
+      }
+    </script>
+  </body>
+</html>
